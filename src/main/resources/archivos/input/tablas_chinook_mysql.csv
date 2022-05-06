@@ -1,0 +1,12 @@
+﻿nombreTabla,numeroTabla,cantidadFilas
+album,1,347
+artist,2,275
+customer,3,59
+employee,4,8
+genre,5,25
+invoice,6,412
+invoiceline,7,2240
+mediatype,8,5
+playlist,9,18
+playlisttrack,10,8715
+track,11,3483
