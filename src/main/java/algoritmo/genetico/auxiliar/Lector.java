@@ -90,18 +90,24 @@ public class Lector {
         this.leerColumnas();
         this.setColumnasQuery();
         this.setEspacioTablasQuerys();
+        this.setColumnaMasComunPorTabla();
 //        System.out.println("Tablas");
 //        for (Tabla t : this.tablas){
 //            t.printTabla();
 //        }
 //        System.out.println("Columnas");
-//        for (Columna c : this.columnas){
+//        for (Gen c : this.columnas){
 //            c.printColumna();
 //        }
 //        System.out.println("Query: ");
 //        System.out.println(this.querys);
 //        System.out.println("Columnas del query");
-//        for (Columna c : this.columnasQuery){
+//        for (Gen c : this.columnasQuery){
+//            c.printColumna();
+//        }
+//        System.out.println("El espacio de la tablas del query es " + this.espacioTablasQuerys);
+//        System.out.println("Columna mas comun por tabla");
+//        for (Gen c : this.columnaMasComunPorTabla){
 //            c.printColumna();
 //        }
     }
@@ -118,7 +124,7 @@ public class Lector {
             {
                 String[] tabla = line.split(splitBy);
                 //use comma as separator
-                Tabla nuevaT = new Tabla(tabla[0], Integer.parseInt(tabla[1]), Integer.parseInt(tabla[2]), Double.parseDouble(tabla[2]));
+                Tabla nuevaT = new Tabla(tabla[0], Integer.parseInt(tabla[1]), Integer.parseInt(tabla[2]), Double.parseDouble(tabla[3]));
                 this.tablas.add(nuevaT);
             }
         }
@@ -207,10 +213,10 @@ public class Lector {
         int count, index;
 
         for (Tabla t : this.tablas){
-            List<Gen> columnasAux = this.columnas.stream()
+            List<Gen> columnasAux = this.columnasQuery.stream()
                     .filter(columna -> columna.getTuplaTabla() == t.getNumeroTabla())
                     .collect(Collectors.toList());
-            if (columnasAux != null){
+            if (columnasAux.size() > 0){
                 int[] cantOcurrencias = new int[columnasAux.size()];
                 for (int i=0; i<columnasAux.size(); i++){
                     nombreTabla = t.getNombreTabla();

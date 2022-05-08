@@ -75,6 +75,8 @@ public class Cromosoma implements Comparable<Cromosoma> {
             }
             if (indexName != "IX_"){
                 indexName = indexName.substring(0, indexName.length() - 1);
+                if (indexName.length() >= 64)
+                    indexName = indexName.substring(0, 63);
                 indexColumns = indexColumns.substring(0, indexColumns.length() - 2);
                 createIndexSyntax += "CREATE INDEX " + indexName + " ON " + tablas.get(i).getNombreTabla() + " (" + indexColumns + ");";
                 dropIndexSyntax += "DROP INDEX " + indexName + " ON " + tablas.get(i).getNombreTabla() + ";";
@@ -97,17 +99,19 @@ public class Cromosoma implements Comparable<Cromosoma> {
                 this.querys = String.join(";", querys);
             }
         }
-        this.createIndexSyntax = createIndexSyntax;
+        this.createIndexSyntax = createIndexSyntax != "" ? createIndexSyntax : "No necesita indice";
         //Correr querys
         try (Connection conn = DriverManager.getConnection(connectionUrl, "root", "Lobogris22-1")) {
             Statement stmt = conn.createStatement();
             String[] checkIndex = checkExistance.split(";");
             String[] createIndex = createIndexSyntax.split(";");
-            for (int i = 0; i<createIndex.length; i++){
-                ResultSet rs = stmt.executeQuery(checkIndex[i].trim());
-                rs.last();
-                if (rs.getRow()==0){
-                    stmt.execute(createIndex[i].trim());
+            if (checkExistance != ""){
+                for (int i = 0; i<createIndex.length; i++){
+                    ResultSet rs = stmt.executeQuery(checkIndex[i].trim());
+                    rs.last();
+                    if (rs.getRow()==0){
+                        stmt.execute(createIndex[i].trim());
+                    }
                 }
             }
             String[] query = this.querys.split(";");
@@ -122,8 +126,10 @@ public class Cromosoma implements Comparable<Cromosoma> {
             this.tiempoEjecucion = endTime;
             this.querys = queryOriginal;
             String[] dropIndex = dropIndexSyntax.split(";");
-            for (int i = 0; i<dropIndex.length; i++){
-                stmt.execute(dropIndex[i]);
+            if (dropIndexSyntax != "") {
+                for (int i = 0; i<dropIndex.length; i++){
+                    stmt.execute(dropIndex[i]);
+                }
             }
         } catch (SQLException ex) {
             if (!ex.getMessage().contains("needed in a foreign key constraint")){
@@ -141,6 +147,7 @@ public class Cromosoma implements Comparable<Cromosoma> {
             throw new InvalidParameterException(Constante.INVALID_PARAMETER_MSG);
         if (tablas.isEmpty())
             throw new InvalidParameterException(Constante.EMPTY_LIST_PARAMETER_MSG);
+        this.setColumnasSeleccionadas();
         if (this.columnasSeleccionadas == null)
             throw new InvalidParameterException(Constante.INCONSISTENT_PARAMETER_MSG);
         double sum = 0;
@@ -209,6 +216,7 @@ public class Cromosoma implements Comparable<Cromosoma> {
     }
 
     public void crearCromosomaMitad(List<Tabla> tablas) {
+        this.setColumnasSeleccionadas();
         //Cantidad de índices por tabla
         int[] indiceColumnas = new int[tablas.size()];
         int count;
@@ -259,6 +267,7 @@ public class Cromosoma implements Comparable<Cromosoma> {
     }
 
     public void crearCromosomaMitadMutado(List<Tabla> tablas) {
+        this.setColumnasSeleccionadas();
         //Cantidad de índices por tabla
         int[] indiceColumnas = new int[tablas.size()];
         int count;
@@ -302,62 +311,65 @@ public class Cromosoma implements Comparable<Cromosoma> {
     public Cromosoma cruzar(Cromosoma padre2) {
         Random rand = new Random();
         int punto1, punto2, indicepadre2 = 0;
-        float prob;
         ArrayList<Gen> columnasNuevas = new ArrayList<>();
         Cromosoma nuevoCromosoma;
-        //Metodo
-        punto1=rand.nextInt(this.columnas.size());
-        punto2=rand.nextInt(this.columnas.size());
-
-        if(punto2<punto1){
-            int aux=punto1;
-            punto1=punto2;
-            punto2=aux;
-        }
-
-        while(columnasNuevas.size() < this.columnas.size()) columnasNuevas.add(null);
-        for(int i=punto1;i<=punto2;i++){
-            columnasNuevas.set(i,this.columnas.get(i));
-        }
-        for(int i=punto2+1;i<columnasNuevas.size();i++){
-            while(columnasNuevas.contains(padre2.getColumnas().get(indicepadre2))){
-                indicepadre2++;
-            }
-            columnasNuevas.set(i,padre2.getColumnas().get(indicepadre2));
-        }
-        for(int i=0;i<punto1;i++){
-            while(columnasNuevas.contains(padre2.getColumnas().get(indicepadre2))){
-                indicepadre2++;
-            }
-            columnasNuevas.set(i,padre2.getColumnas().get(indicepadre2));
-        }
-
-//        //Metodo simple
-//        int punto = rand.nextInt(this.columnas.size());
-//        for (int i =0 ;i<this.columnas.size();i++){
-//            if(i<punto) {
-//                columnasNuevas.add(this.columnas.get(i));
-//            }
-//            else {
-//                columnasNuevas.add(padre2.getColumnas().get(i));
-//            }
+//        //Metodo
+//        punto1=rand.nextInt(this.columnas.size());
+//        punto2=rand.nextInt(this.columnas.size());
+//
+//        if(punto2<punto1){
+//            int aux=punto1;
+//            punto1=punto2;
+//            punto2=aux;
 //        }
+
+//        for (Gen col : this.columnas){
+//            columnasNuevas.add(new Gen(col));
+//        }
+//        for(int i=punto1;i<=punto2;i++){
+//            columnasNuevas.get(i).setProbabilidadEleccion(this.columnas.get(i).getProbabilidadEleccion());
+//        }
+//        for(int i=punto2+1;i<columnasNuevas.size();i++){
+//            while(columnasNuevas.contains(padre2.getColumnas().get(indicepadre2))){
+//                indicepadre2++;
+//            }
+//            columnasNuevas.set(i,padre2.getColumnas().get(indicepadre2));
+//        }
+//        for(int i=0;i<punto1;i++){
+//            while(columnasNuevas.contains(padre2.getColumnas().get(indicepadre2))){
+//                indicepadre2++;
+//            }
+//            columnasNuevas.set(i,padre2.getColumnas().get(indicepadre2));
+//        }
+
+        //Metodo simple
+        int punto = rand.nextInt(this.columnas.size());
+        for (int i =0; i<this.columnas.size(); i++){
+            if(i<punto) {
+                columnasNuevas.add(new Gen(this.columnas.get(i)));
+            }
+            else {
+                columnasNuevas.add(new Gen(padre2.getColumnas().get(i)));
+            }
+        }
 
         nuevoCromosoma = new Cromosoma(this.querys, columnasNuevas);
         return nuevoCromosoma;
     }
 
     public void mutar(){
-        int punto1, punto2;
         Random rand = new Random();
-        Gen aux;
-        punto1=rand.nextInt(this.columnas.size());
-        punto2=rand.nextInt(this.columnas.size());
+        int punto = rand.nextInt(this.columnas.size());
 
-        aux=this.columnas.get(punto1);
-        this.columnas.set(punto1,this.columnas.get(punto2));
-        this.columnas.set(punto2,aux);
-        System.out.println(this.columnas);
+        Gen genMutar = this.columnas.get(punto);
+        if (genMutar.getMuta() == 1){
+            byte prob = this.columnas.get(punto).getProbabilidadEleccion();
+            this.columnas.get(punto).setProbabilidadEleccion(prob == (byte) 1 ? (byte) 0 : (byte) 1);
+        }
+    }
+
+    public void printSolucion() {
+        System.out.println(this.createIndexSyntax);
     }
 
     @Override

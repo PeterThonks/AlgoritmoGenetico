@@ -53,4 +53,9 @@ public class Tabla {
     public void setEspacio(double espacio) {
         this.espacio = espacio;
     }
+
+    public void printTabla(){
+        System.out.println("Tabla " + this.nombreTabla + " n° " + this.numeroTabla + " con "
+                + this.cantidadFilas + " filas y " + this.espacio + " gb de espacio.");
+    }
 }

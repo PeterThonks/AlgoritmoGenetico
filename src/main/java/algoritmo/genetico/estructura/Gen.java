@@ -83,6 +83,6 @@ public class Gen {
 
     public void printColumna(){
         System.out.println("Columna " + this.nombreColumna + " n° " + this.tupla + " con cantidad de bytes " + this.cantidadBytes
-                + "y probabilidad de elección de " + this.probabilidadEleccion);
+                + " y probabilidad de elección de " + this.probabilidadEleccion);
     }
 }

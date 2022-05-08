@@ -21,12 +21,25 @@ public class Poblacion {
         this.tamanoPoblacion = tamanoPoblacion;
     }
 
+    public Poblacion(List<Cromosoma> poblacion, int tamanoPoblacion) {
+        if (tamanoPoblacion < 0)
+            throw new InvalidParameterException(Constante.NEGATIVE_PARAMETER_MSG);
+        if (poblacion == null)
+            throw new InvalidParameterException(Constante.INVALID_PARAMETER_MSG);
+        if (poblacion.isEmpty())
+            throw new InvalidParameterException(Constante.EMPTY_LIST_PARAMETER_MSG);
+        this.poblacion = poblacion;
+        this.tamanoPoblacion = tamanoPoblacion;
+    }
+
     public int getTamanoPoblacion() { return tamanoPoblacion; }
 
-    public void crearPoblacion(Lector lector, float rh){
+    public Cromosoma getMejorSolucion() { return mejorSolucion; }
+
+    public void crearPoblacionInicial(Lector lector, float rh){
         if (lector == null)
             throw new InvalidParameterException(Constante.INVALID_PARAMETER_MSG);
-        if (rh < 0)
+        if (rh < 0f)
             throw new InvalidParameterException(Constante.NEGATIVE_PARAMETER_MSG);
         List<Gen> columnasSel = lector.getColumnasQuery();
         Cromosoma nuevoGen;
@@ -35,32 +48,32 @@ public class Poblacion {
             nuevoGen = new Cromosoma(lector.getQuerys(), lector.getColumnasQuery());
             nuevoGen.crearCromosomaNoIndexado();
         } while (!nuevoGen.esValido(lector.getTablas(), lector.getEspacioTablasQuerys(), rh));
-        p.add(nuevoGen);
+        p.add(new Cromosoma(nuevoGen));
         do {
             nuevoGen = new Cromosoma(lector.getQuerys(), lector.getColumnasQuery());
             nuevoGen.crearCromosomaPonderado(lector.getColumnaMasComunPorTabla());
         } while (!nuevoGen.esValido(lector.getTablas(), lector.getEspacioTablasQuerys(), rh));
-        p.add(nuevoGen);
+        p.add(new Cromosoma(nuevoGen));
         do {
             nuevoGen = new Cromosoma(lector.getQuerys(), lector.getColumnasQuery());
             nuevoGen.crearCromosomaMitad(lector.getTablas());
         } while (!nuevoGen.esValido(lector.getTablas(), lector.getEspacioTablasQuerys(), rh));
-        p.add(nuevoGen);
+        p.add(new Cromosoma(nuevoGen));
         do {
             nuevoGen = new Cromosoma(lector.getQuerys(), lector.getColumnasQuery());
             nuevoGen.crearCromosomaNoIndexadoMutado();
         } while (!nuevoGen.esValido(lector.getTablas(), lector.getEspacioTablasQuerys(), rh));
-        p.add(nuevoGen);
+        p.add(new Cromosoma(nuevoGen));
         do {
             nuevoGen = new Cromosoma(lector.getQuerys(), lector.getColumnasQuery());
             nuevoGen.crearCromosomaPonderadoMutado(lector.getColumnaMasComunPorTabla());
         } while (!nuevoGen.esValido(lector.getTablas(), lector.getEspacioTablasQuerys(), rh));
-        p.add(nuevoGen);
+        p.add(new Cromosoma(nuevoGen));
         do {
             nuevoGen = new Cromosoma(lector.getQuerys(), lector.getColumnasQuery());
             nuevoGen.crearCromosomaMitadMutado(lector.getTablas());
         } while (!nuevoGen.esValido(lector.getTablas(), lector.getEspacioTablasQuerys(), rh));
-        p.add(nuevoGen);
+        p.add(new Cromosoma(nuevoGen));
         this.poblacion = p;
     }
 
@@ -86,8 +99,8 @@ public class Poblacion {
             if (Math.random() <= probMutacion){
                 Cromosoma nuevoCromosoma = new Cromosoma(c);
                 nuevoCromosoma.mutar();
-                if (c.esValido(lector.getTablas(), lector.getEspacioTablasQuerys(), rh))
-                    poblacionMutada.add(nuevoCromosoma);
+                if (nuevoCromosoma.esValido(lector.getTablas(), lector.getEspacioTablasQuerys(), rh))
+                    poblacionMutada.add(new Cromosoma(nuevoCromosoma));
             }
         }
 
@@ -98,8 +111,8 @@ public class Poblacion {
                 int padre1Index = rand.nextInt(this.poblacion.size()), padre2Index = rand.nextInt(this.poblacion.size());
                 Cromosoma padre1 = new Cromosoma(this.poblacion.get(padre1Index)), padre2 = new Cromosoma(this.poblacion.get(padre2Index)), nuevoCromosoma;
                 nuevoCromosoma = padre1.cruzar(padre2);
-                if (c.esValido(lector.getTablas(), lector.getEspacioTablasQuerys(), rh))
-                    poblacionHijos.add(nuevoCromosoma);
+                if (nuevoCromosoma.esValido(lector.getTablas(), lector.getEspacioTablasQuerys(), rh))
+                    poblacionHijos.add(new Cromosoma(nuevoCromosoma));
             }
         }
 
@@ -112,11 +125,16 @@ public class Poblacion {
             int competidor1Index = rand.nextInt(totalPoblacion.size()), competidor2Index = rand.nextInt(totalPoblacion.size());
             Cromosoma competidor1 = new Cromosoma(totalPoblacion.get(competidor1Index)), competidor2 = new Cromosoma(totalPoblacion.get(competidor2Index));
             if (competidor1.getTiempoEjecucion() <= competidor2.getTiempoEjecucion())
-                totalPoblacion.add(competidor1);
+                nuevaPoblacion.add(new Cromosoma(competidor1));
             else
-                totalPoblacion.add(competidor2);
+                nuevaPoblacion.add(new Cromosoma(competidor2));
         }
 
         return nuevaPoblacion;
+    }
+
+    public void printMejorSolucion() {
+        System.out.println("La mejor solución es:");
+        System.out.println(this.mejorSolucion.getCreateIndexSyntax());
     }
 }
