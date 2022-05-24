@@ -1,6 +1,7 @@
 package algoritmo.genetico.estructura;
 
 import algoritmo.shared.util.Constante;
+import org.javatuples.Pair;
 
 import java.security.InvalidParameterException;
 import java.sql.*;
@@ -203,6 +204,11 @@ public class Cromosoma implements Comparable<Cromosoma> {
     }
 
     public void crearCromosomaPonderado(List<Gen> columnaMasComunPorTabla) {
+        if (columnaMasComunPorTabla == null)
+            throw new InvalidParameterException(Constante.INVALID_PARAMETER_MSG);
+        if (columnaMasComunPorTabla.isEmpty())
+            throw new InvalidParameterException(Constante.EMPTY_LIST_PARAMETER_MSG);
+
         for (Gen g : columnaMasComunPorTabla){
             Gen columnaMasComun = this.columnas.stream()
                     .filter(columna -> g.getTupla() == columna.getTupla())
@@ -216,6 +222,11 @@ public class Cromosoma implements Comparable<Cromosoma> {
     }
 
     public void crearCromosomaMitad(List<Tabla> tablas) {
+        if (tablas == null)
+            throw new InvalidParameterException(Constante.INVALID_PARAMETER_MSG);
+        if (tablas.isEmpty())
+            throw new InvalidParameterException(Constante.EMPTY_LIST_PARAMETER_MSG);
+
         this.setColumnasSeleccionadas();
         //Cantidad de índices por tabla
         int[] indiceColumnas = new int[tablas.size()];
@@ -254,6 +265,11 @@ public class Cromosoma implements Comparable<Cromosoma> {
     }
 
     public void crearCromosomaPonderadoMutado(List<Gen> columnaMasComunPorTabla) {
+        if (columnaMasComunPorTabla == null)
+            throw new InvalidParameterException(Constante.INVALID_PARAMETER_MSG);
+        if (columnaMasComunPorTabla.isEmpty())
+            throw new InvalidParameterException(Constante.EMPTY_LIST_PARAMETER_MSG);
+
         for (Gen g : columnaMasComunPorTabla){
             Gen columnaMasComun = this.columnas.stream()
                     .filter(columna -> g.getTupla() == columna.getTupla())
@@ -267,6 +283,11 @@ public class Cromosoma implements Comparable<Cromosoma> {
     }
 
     public void crearCromosomaMitadMutado(List<Tabla> tablas) {
+        if (tablas == null)
+            throw new InvalidParameterException(Constante.INVALID_PARAMETER_MSG);
+        if (tablas.isEmpty())
+            throw new InvalidParameterException(Constante.EMPTY_LIST_PARAMETER_MSG);
+
         this.setColumnasSeleccionadas();
         //Cantidad de índices por tabla
         int[] indiceColumnas = new int[tablas.size()];
@@ -309,40 +330,12 @@ public class Cromosoma implements Comparable<Cromosoma> {
     }
 
     public Cromosoma cruzar(Cromosoma padre2) {
+        if (padre2 == null)
+            throw new InvalidParameterException(Constante.INVALID_PARAMETER_MSG);
         Random rand = new Random();
-        int punto1, punto2, indicepadre2 = 0;
         ArrayList<Gen> columnasNuevas = new ArrayList<>();
         Cromosoma nuevoCromosoma;
-//        //Metodo
-//        punto1=rand.nextInt(this.columnas.size());
-//        punto2=rand.nextInt(this.columnas.size());
-//
-//        if(punto2<punto1){
-//            int aux=punto1;
-//            punto1=punto2;
-//            punto2=aux;
-//        }
 
-//        for (Gen col : this.columnas){
-//            columnasNuevas.add(new Gen(col));
-//        }
-//        for(int i=punto1;i<=punto2;i++){
-//            columnasNuevas.get(i).setProbabilidadEleccion(this.columnas.get(i).getProbabilidadEleccion());
-//        }
-//        for(int i=punto2+1;i<columnasNuevas.size();i++){
-//            while(columnasNuevas.contains(padre2.getColumnas().get(indicepadre2))){
-//                indicepadre2++;
-//            }
-//            columnasNuevas.set(i,padre2.getColumnas().get(indicepadre2));
-//        }
-//        for(int i=0;i<punto1;i++){
-//            while(columnasNuevas.contains(padre2.getColumnas().get(indicepadre2))){
-//                indicepadre2++;
-//            }
-//            columnasNuevas.set(i,padre2.getColumnas().get(indicepadre2));
-//        }
-
-        //Metodo simple
         int punto = rand.nextInt(this.columnas.size());
         for (int i =0; i<this.columnas.size(); i++){
             if(i<punto) {
@@ -370,6 +363,17 @@ public class Cromosoma implements Comparable<Cromosoma> {
 
     public void printSolucion() {
         System.out.println(this.createIndexSyntax);
+    }
+
+    public boolean mismasColumnasSeleccionadas (Cromosoma otro){
+        if (this.columnasSeleccionadas.size() != otro.getColumnasSeleccionadas().size())
+            return false;
+        List<Pair<Integer, Integer>> cols = new ArrayList<>(), colsOtro = new ArrayList<>();
+        for (int i=0; i<this.columnasSeleccionadas.size(); i++){
+            cols.add(this.columnasSeleccionadas.get(i).getTupla());
+            colsOtro.add(otro.getColumnasSeleccionadas().get(i).getTupla());
+        }
+        return cols.equals(colsOtro);
     }
 
     @Override

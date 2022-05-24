@@ -89,7 +89,7 @@ public class Lector {
         this.leerTablas();
         this.leerColumnas();
         this.setColumnasQuery();
-        this.setEspacioTablasQuerys();
+        this.setEspacioTablasQueries();
         this.setColumnaMasComunPorTabla();
 //        System.out.println("Tablas");
 //        for (Tabla t : this.tablas){
@@ -196,7 +196,7 @@ public class Lector {
         this.columnasQuery = columnasQuery;
     }
 
-    public void setEspacioTablasQuerys() {
+    public void setEspacioTablasQueries() {
         double sum=0;
         for (Tabla t : this.tablas){
             List<Gen> aux = this.columnasQuery.stream()
@@ -225,7 +225,6 @@ public class Lector {
                     count = 0;
                     index = 0;
                     while((index= this.querys.indexOf(key,index))!=-1){
-                        System.out.println("index="+index);
                         index = index + key.length();
                         count++;
                     }
@@ -233,7 +232,7 @@ public class Lector {
                 }
                 int maxAt = 0;
                 for (int i = 0; i < cantOcurrencias.length; i++) {
-                    maxAt = cantOcurrencias[i] > cantOcurrencias[maxAt] ? i : maxAt;
+                    maxAt = cantOcurrencias[i] >= cantOcurrencias[maxAt] ? i : maxAt;
                 }
                 columnaMasComunPorTabla.add(new Gen(columnasAux.get(maxAt)));
             }

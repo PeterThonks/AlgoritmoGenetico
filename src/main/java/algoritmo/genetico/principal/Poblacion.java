@@ -13,12 +13,14 @@ import java.util.stream.Stream;
 public class Poblacion {
     private List<Cromosoma> poblacion;
     private int tamanoPoblacion;
+    private int tamanoPoblacionElitista;
     private Cromosoma mejorSolucion;
 
-    public Poblacion(int tamanoPoblacion) {
-        if (tamanoPoblacion < 0)
+    public Poblacion(int tamanoPoblacion, int tamanoPoblacionElitista) {
+        if (tamanoPoblacion < 0 || tamanoPoblacionElitista < 0)
             throw new InvalidParameterException(Constante.NEGATIVE_PARAMETER_MSG);
         this.tamanoPoblacion = tamanoPoblacion;
+        this.tamanoPoblacionElitista = tamanoPoblacionElitista;
     }
 
     public Poblacion(List<Cromosoma> poblacion, int tamanoPoblacion) {
@@ -90,9 +92,12 @@ public class Poblacion {
     }
 
     public List<Cromosoma> crearNuevaPoblacion (Lector lector, float rh, double espacioTablasQuerys, float probMutacion, float probCruzamiento) {
+        if (lector == null)
+            throw new InvalidParameterException(Constante.INVALID_PARAMETER_MSG);
         if (rh < 0 || espacioTablasQuerys < 0 || probMutacion < 0 || probCruzamiento < 0)
             throw new InvalidParameterException(Constante.NEGATIVE_PARAMETER_MSG);
-        List<Cromosoma> poblacionMutada = new ArrayList<>(), poblacionHijos = new ArrayList<>(), nuevaPoblacion = new ArrayList<>(), totalPoblacion;
+        List<Cromosoma> poblacionMutada = new ArrayList<>(), poblacionHijos = new ArrayList<>(),
+                nuevaPoblacion = new ArrayList<>(), poblacionElitista = new ArrayList<>(), totalPoblacion;
 
         //Mutación
         for (Cromosoma c : this.poblacion){
@@ -119,22 +124,23 @@ public class Poblacion {
         totalPoblacion = Stream.of(this.poblacion, poblacionMutada, poblacionHijos)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
+        Collections.sort(totalPoblacion);
 
-        for (int i=0; i<6; i++){
-            Random rand = new Random();
-            int competidor1Index = rand.nextInt(totalPoblacion.size()), competidor2Index = rand.nextInt(totalPoblacion.size());
-            Cromosoma competidor1 = new Cromosoma(totalPoblacion.get(competidor1Index)), competidor2 = new Cromosoma(totalPoblacion.get(competidor2Index));
-            if (competidor1.getTiempoEjecucion() <= competidor2.getTiempoEjecucion())
-                nuevaPoblacion.add(new Cromosoma(competidor1));
-            else
-                nuevaPoblacion.add(new Cromosoma(competidor2));
+        for (int i=0; i<this.tamanoPoblacion; i++){
+            if (i<this.tamanoPoblacionElitista){
+                nuevaPoblacion.add(new Cromosoma(totalPoblacion.get(i)));
+            }
+            else {
+                Random rand = new Random();
+                int competidor1Index = rand.nextInt(totalPoblacion.size()), competidor2Index = rand.nextInt(totalPoblacion.size());
+                Cromosoma competidor1 = new Cromosoma(totalPoblacion.get(competidor1Index)), competidor2 = new Cromosoma(totalPoblacion.get(competidor2Index));
+                if (competidor1.getTiempoEjecucion() <= competidor2.getTiempoEjecucion())
+                    nuevaPoblacion.add(new Cromosoma(competidor1));
+                else
+                    nuevaPoblacion.add(new Cromosoma(competidor2));
+            }
         }
 
         return nuevaPoblacion;
-    }
-
-    public void printMejorSolucion() {
-        System.out.println("La mejor solución es:");
-        System.out.println(this.mejorSolucion.getCreateIndexSyntax());
     }
 }

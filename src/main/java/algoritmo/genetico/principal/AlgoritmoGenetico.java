@@ -19,23 +19,30 @@ public class AlgoritmoGenetico {
                 Path.of(Constante.PATH_INPUT_CSV + filenameQuery));
         lector.leerArchivos();
 
-        int tamanoPoblacion = lector.getColumnasQuery().size() / 2, t = 1, maxIter = 100;
+        int tamanoPoblacion = 50, tamanoPoblacionElitista = 10, t = 1, maxIter = 500, sinMejora = 0;
         float probMutacion = 0.15f, probCruzamiento = 0.85f, rh = 0.9f;
         long startTime, endTime;
         Cromosoma mejorAnterior, mejorActual;
         startTime = System.nanoTime();
-        Poblacion poblacion = new Poblacion(tamanoPoblacion);
+        Poblacion poblacion = new Poblacion(tamanoPoblacion, tamanoPoblacionElitista);
         poblacion.crearPoblacionInicial(lector, rh);
         poblacion.obtenerMejorSolucion(lector);
         mejorAnterior = poblacion.getMejorSolucion();
         while (t <= maxIter){
             System.out.println("Iteración n° "+t);
+            if (sinMejora == 50)
+                break;
+            System.out.println("Sin mejora n° "+sinMejora);
             List<Cromosoma> cromosomasNuevos = poblacion.crearNuevaPoblacion(lector, rh, lector.getEspacioTablasQuerys(), probMutacion, probCruzamiento);
             poblacion = new Poblacion(cromosomasNuevos, tamanoPoblacion);
             poblacion.obtenerMejorSolucion(lector);
             mejorActual = poblacion.getMejorSolucion();
-            if (mejorActual.getTiempoEjecucion() < mejorAnterior.getTiempoEjecucion())
+            if (mejorAnterior.mismasColumnasSeleccionadas(mejorActual))
+                sinMejora++;
+            if (mejorActual.getTiempoEjecucion() < mejorAnterior.getTiempoEjecucion()){
                 mejorAnterior = mejorActual;
+                sinMejora = 0;
+            }
             t++;
         }
         System.out.println("Mejor solución");
