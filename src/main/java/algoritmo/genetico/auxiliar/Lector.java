@@ -161,6 +161,7 @@ public class Lector {
 //            System.out.println(querys[i]);
             querys[i] = querys[i].trim().toLowerCase();
             String fromStatement = querys[i].substring(querys[i].indexOf("from"));
+            String whereStatement = querys[i].substring(querys[i].indexOf("where"));
             try {
                 Statement statement = CCJSqlParserUtil.parse(querys[i]);
                 Select selectStatement = (Select) statement;
@@ -184,8 +185,10 @@ public class Lector {
                         if (querys[i].contains(nombreCol) && columnaRepetida == null){
 //                            System.out.println(nombreCol);
                             Gen newCol = new Gen(col);
-                            if (fromStatement.contains(nombreCol))
+                            if (fromStatement.contains(nombreCol) && !whereStatement.contains(nombreCol))
                                 newCol.setPenalidad(1f);
+                            else if (fromStatement.contains(nombreCol) && whereStatement.contains(nombreCol))
+                                newCol.setPenalidad(2f);
                             else
                                 newCol.setPenalidad(7.5f);
                             columnasQuery.add(newCol);

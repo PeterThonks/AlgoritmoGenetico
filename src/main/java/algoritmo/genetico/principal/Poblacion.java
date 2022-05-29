@@ -88,9 +88,9 @@ public class Poblacion {
             }
         }
         Collections.sort(this.poblacion);
-        double tiempoMin = this.poblacion.get(0).getTiempoEjecucion();
+        double fitnessMin = this.poblacion.get(0).getFitness();
         List<Cromosoma> poblacionTop = this.poblacion.stream()
-                .filter(cromosoma -> cromosoma.getTiempoEjecucion() == tiempoMin)
+                .filter(cromosoma -> cromosoma.getFitness() == fitnessMin)
                 .collect(Collectors.toList());
         this.mejorSolucion = poblacionTop;
     }
@@ -101,7 +101,7 @@ public class Poblacion {
         if (rh < 0 || espacioTablasQuerys < 0 || probMutacion < 0 || probCruzamiento < 0)
             throw new InvalidParameterException(Constante.NEGATIVE_PARAMETER_MSG);
         List<Cromosoma> poblacionMutada = new ArrayList<>(), poblacionHijos = new ArrayList<>(),
-                nuevaPoblacion = new ArrayList<>(), poblacionElitista = new ArrayList<>(), totalPoblacion;
+                nuevaPoblacion = new ArrayList<>(), totalPoblacion;
 
         //Mutación
         for (Cromosoma c : this.poblacion){
@@ -138,7 +138,7 @@ public class Poblacion {
                 Random rand = new Random();
                 int competidor1Index = rand.nextInt(totalPoblacion.size()), competidor2Index = rand.nextInt(totalPoblacion.size());
                 Cromosoma competidor1 = new Cromosoma(totalPoblacion.get(competidor1Index)), competidor2 = new Cromosoma(totalPoblacion.get(competidor2Index));
-                if (competidor1.getTiempoEjecucion() <= competidor2.getTiempoEjecucion())
+                if (competidor1.getFitness() <= competidor2.getFitness())
                     nuevaPoblacion.add(new Cromosoma(competidor1));
                 else
                     nuevaPoblacion.add(new Cromosoma(competidor2));

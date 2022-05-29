@@ -409,9 +409,9 @@ public class Cromosoma implements Comparable<Cromosoma> {
     }
 
     public boolean mejorCromosoma (Cromosoma otro) {
-        if (this.getTiempoEjecucion() < otro.getTiempoEjecucion())
+        if (this.getFitness() < otro.getFitness())
             return true;
-        else if (this.getTiempoEjecucion() == otro.getTiempoEjecucion() &&
+        else if (this.getFitness() == otro.getFitness() &&
                 this.getColumnasSeleccionadas().size() < otro.getColumnasSeleccionadas().size() &&
                 otro.getColumnasSeleccionadas().size() != 0)
             return true;

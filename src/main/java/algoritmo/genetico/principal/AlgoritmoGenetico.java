@@ -31,7 +31,7 @@ public class AlgoritmoGenetico {
         mejorAnterior = poblacion.getMejorSolucion();
         while (t <= maxIter){
             System.out.println("Iteración n° "+t);
-            if (sinMejora == 50)
+            if (sinMejora == 100)
                 break;
             System.out.println("Sin mejora n° "+sinMejora);
             List<Cromosoma> cromosomasNuevos = poblacion.crearNuevaPoblacion(lector, rh, lector.getEspacioTablasQuerys(), probMutacion, probCruzamiento);

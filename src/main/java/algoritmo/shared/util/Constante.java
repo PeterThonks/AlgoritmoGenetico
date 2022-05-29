@@ -7,7 +7,7 @@ public class Constante {
     public static final String PATH_INPUT_CSV_TEST = "src/test/resources/";
 
     // DB seleccionada
-    public static final String DATABASE_SELECTED = "northwind"/*"employees"*//*"chinook"*/;
+    public static final String DATABASE_SELECTED = /*"northwind"*//*"employees"*/"chinook";
 
     // Mnesajes de excepción
     public static final String INVALID_PARAMETER_MSG = "Uno de los parámetros enviados es nulo";
