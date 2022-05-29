@@ -14,7 +14,7 @@ public class Poblacion {
     private List<Cromosoma> poblacion;
     private int tamanoPoblacion;
     private int tamanoPoblacionElitista;
-    private Cromosoma mejorSolucion;
+    private List<Cromosoma> mejorSolucion;
 
     public Poblacion(int tamanoPoblacion, int tamanoPoblacionElitista) {
         if (tamanoPoblacion < 0 || tamanoPoblacionElitista < 0)
@@ -36,7 +36,7 @@ public class Poblacion {
 
     public int getTamanoPoblacion() { return tamanoPoblacion; }
 
-    public Cromosoma getMejorSolucion() { return mejorSolucion; }
+    public List<Cromosoma> getMejorSolucion() { return mejorSolucion; }
 
     public void crearPoblacionInicial(Lector lector, float rh){
         if (lector == null)
@@ -83,12 +83,16 @@ public class Poblacion {
         if (lector == null)
             throw new InvalidParameterException(Constante.INVALID_PARAMETER_MSG);
         for (int i = 0; i<this.poblacion.size(); i++){
-            if (this.poblacion.get(i).getTiempoEjecucion() == 1000000000){
-                this.poblacion.get(i).setTiempoEjecucion(lector.getTablas());
+            if (this.poblacion.get(i).getFitness() == 1000000000){
+                this.poblacion.get(i).setFitness(lector.getTablas());
             }
         }
         Collections.sort(this.poblacion);
-        this.mejorSolucion = this.poblacion.get(0);
+        double tiempoMin = this.poblacion.get(0).getTiempoEjecucion();
+        List<Cromosoma> poblacionTop = this.poblacion.stream()
+                .filter(cromosoma -> cromosoma.getTiempoEjecucion() == tiempoMin)
+                .collect(Collectors.toList());
+        this.mejorSolucion = poblacionTop;
     }
 
     public List<Cromosoma> crearNuevaPoblacion (Lector lector, float rh, double espacioTablasQuerys, float probMutacion, float probCruzamiento) {

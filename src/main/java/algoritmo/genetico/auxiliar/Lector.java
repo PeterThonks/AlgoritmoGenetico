@@ -184,6 +184,10 @@ public class Lector {
                         if (querys[i].contains(nombreCol) && columnaRepetida == null){
 //                            System.out.println(nombreCol);
                             Gen newCol = new Gen(col);
+                            if (fromStatement.contains(nombreCol))
+                                newCol.setPenalidad(1f);
+                            else
+                                newCol.setPenalidad(7.5f);
                             columnasQuery.add(newCol);
                         }
                     }

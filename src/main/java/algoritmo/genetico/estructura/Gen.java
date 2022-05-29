@@ -11,6 +11,7 @@ public class Gen {
     private long cantidadBytes;
     private byte probabilidadEleccion;
     private byte muta;
+    private float penalidad;
 
     public Gen(String nombreColumna, int tabla, int columna, long cantidadBytes) {
         if (nombreColumna == null)
@@ -31,6 +32,7 @@ public class Gen {
         this.cantidadBytes = otro.getCantidadBytes();
         this.probabilidadEleccion = otro.getProbabilidadEleccion();
         this.muta = otro.getMuta();
+        this.penalidad = otro.getPenalidad();
     }
 
     public String getNombreColumna() {
@@ -73,6 +75,14 @@ public class Gen {
         this.probabilidadEleccion = probabilidadEleccion;
     }
 
+    public float getPenalidad() {
+        return penalidad;
+    }
+
+    public void setPenalidad(float penalidad) {
+        this.penalidad = penalidad;
+    }
+
     public byte getMuta() {
         return muta;
     }
@@ -83,6 +93,6 @@ public class Gen {
 
     public void printColumna(){
         System.out.println("Columna " + this.nombreColumna + " n° " + this.tupla + " con cantidad de bytes " + this.cantidadBytes
-                + " y probabilidad de elección de " + this.probabilidadEleccion);
+                + " probabilidad de elección de " + this.probabilidadEleccion + " y penalidad de " + this.penalidad);
     }
 }

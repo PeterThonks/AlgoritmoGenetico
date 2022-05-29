@@ -14,8 +14,10 @@ public class Cromosoma implements Comparable<Cromosoma> {
     private String querys;
     private double tiempoEjecucion;
     private double espacio;
+    private double penalidadTotal;
     private List<Gen> columnas;
     private List<Gen> columnasSeleccionadas;
+    private double fitness;
     private String createIndexSyntax;
 
     public Cromosoma(String querys, List<Gen> columnas) {
@@ -26,13 +28,15 @@ public class Cromosoma implements Comparable<Cromosoma> {
 
         this.querys = querys;
         this.columnas = columnas;
-        this.tiempoEjecucion = 1000000000;
+        this.fitness = 1000000000;
     }
 
     public Cromosoma(Cromosoma otro){
         this.querys = otro.querys;
         this.tiempoEjecucion = otro.tiempoEjecucion;
         this.espacio = otro.espacio;
+        this.penalidadTotal = otro.getPenalidadTotal();
+        this.fitness = otro.getFitness();
 
         List<Gen> copyList = new ArrayList<>();
         for (Gen col : otro.getColumnas()){
@@ -124,7 +128,7 @@ public class Cromosoma implements Comparable<Cromosoma> {
                 stmt.execute(query[i]);
                 endTime += (System.nanoTime() - startTime)/1000000000;
             }
-            this.tiempoEjecucion = endTime;
+            this.tiempoEjecucion = (double)Math.round(endTime * 1000000d) / 1000000d;
             this.querys = queryOriginal;
             String[] dropIndex = dropIndexSyntax.split(";");
             if (dropIndexSyntax != "") {
@@ -170,6 +174,23 @@ public class Cromosoma implements Comparable<Cromosoma> {
         this.espacio = sum;
     }
 
+    public double getPenalidadTotal() {
+        return penalidadTotal;
+    }
+
+    public void setPenalidadTotal() {
+        if (this.columnasSeleccionadas == null)
+            throw new InvalidParameterException(Constante.INCONSISTENT_PARAMETER_MSG);
+        double sum = 1;
+        for(Gen col : this.columnasSeleccionadas){
+            sum *= col.getPenalidad();
+        }
+        if (this.columnasSeleccionadas.size() == 0){
+            sum = 5;
+        }
+        this.penalidadTotal = sum;
+    }
+
     public List<Gen> getColumnas() {
         return columnas;
     }
@@ -194,6 +215,17 @@ public class Cromosoma implements Comparable<Cromosoma> {
 
     public String getCreateIndexSyntax() {
         return createIndexSyntax;
+    }
+
+    public double getFitness() {
+        return fitness;
+    }
+
+    public void setFitness(List<Tabla> tablas) {
+        this.setTiempoEjecucion(tablas);
+        this.setPenalidadTotal();
+
+        this.fitness = (double)Math.round(this.getTiempoEjecucion() * this.getPenalidadTotal() * 100000000d) / 100000000d;
     }
 
     public void crearCromosomaNoIndexado() {
@@ -376,12 +408,23 @@ public class Cromosoma implements Comparable<Cromosoma> {
         return cols.equals(colsOtro);
     }
 
+    public boolean mejorCromosoma (Cromosoma otro) {
+        if (this.getTiempoEjecucion() < otro.getTiempoEjecucion())
+            return true;
+        else if (this.getTiempoEjecucion() == otro.getTiempoEjecucion() &&
+                this.getColumnasSeleccionadas().size() < otro.getColumnasSeleccionadas().size() &&
+                otro.getColumnasSeleccionadas().size() != 0)
+            return true;
+        else
+            return false;
+    }
+
     @Override
     public int compareTo(Cromosoma o) {
-        if (this.getTiempoEjecucion() > o.getTiempoEjecucion()){
+        if (this.getFitness() > o.getFitness()){
             return 1;
         }
-        else if (this.getTiempoEjecucion() < o.getTiempoEjecucion()){
+        else if (this.getFitness() < o.getFitness()){
             return -1;
         }
         else {

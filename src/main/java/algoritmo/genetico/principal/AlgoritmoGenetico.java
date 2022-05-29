@@ -2,6 +2,7 @@ package algoritmo.genetico.principal;
 
 import algoritmo.genetico.auxiliar.Lector;
 import algoritmo.genetico.estructura.Cromosoma;
+import algoritmo.genetico.estructura.Gen;
 import algoritmo.shared.util.Constante;
 
 import java.nio.file.Path;
@@ -19,10 +20,10 @@ public class AlgoritmoGenetico {
                 Path.of(Constante.PATH_INPUT_CSV + filenameQuery));
         lector.leerArchivos();
 
-        int tamanoPoblacion = 50, tamanoPoblacionElitista = 10, t = 1, maxIter = 500, sinMejora = 0;
+        int tamanoPoblacion = 30, tamanoPoblacionElitista = 8, t = 1, maxIter = 500, sinMejora = 0;
         float probMutacion = 0.15f, probCruzamiento = 0.85f, rh = 0.9f;
         long startTime, endTime;
-        Cromosoma mejorAnterior, mejorActual;
+        List<Cromosoma> mejorAnterior, mejorActual;
         startTime = System.nanoTime();
         Poblacion poblacion = new Poblacion(tamanoPoblacion, tamanoPoblacionElitista);
         poblacion.crearPoblacionInicial(lector, rh);
@@ -37,16 +38,21 @@ public class AlgoritmoGenetico {
             poblacion = new Poblacion(cromosomasNuevos, tamanoPoblacion);
             poblacion.obtenerMejorSolucion(lector);
             mejorActual = poblacion.getMejorSolucion();
-            if (mejorAnterior.mismasColumnasSeleccionadas(mejorActual))
-                sinMejora++;
-            if (mejorActual.getTiempoEjecucion() < mejorAnterior.getTiempoEjecucion()){
+            if (mejorActual.get(0).getFitness() < mejorAnterior.get(0).getFitness()){
                 mejorAnterior = mejorActual;
                 sinMejora = 0;
             }
+            else
+                sinMejora++;
+            System.out.println("Tiempo: "+mejorAnterior.get(0).getTiempoEjecucion());
+            System.out.println("Fitness: "+mejorAnterior.get(0).getFitness());
             t++;
         }
         System.out.println("Mejor solución");
-        mejorAnterior.printSolucion();
+        for (Cromosoma c : mejorAnterior){
+            System.out.println("Cromosoma");
+            c.printSolucion();
+        }
         endTime = (System.nanoTime() - startTime);
         System.out.println("Tiempo total: " + TimeUnit.MINUTES.convert(endTime, TimeUnit.NANOSECONDS) + " minutos.");
     }
