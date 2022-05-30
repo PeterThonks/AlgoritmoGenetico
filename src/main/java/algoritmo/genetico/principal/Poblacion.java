@@ -43,7 +43,6 @@ public class Poblacion {
             throw new InvalidParameterException(Constante.INVALID_PARAMETER_MSG);
         if (rh < 0f)
             throw new InvalidParameterException(Constante.NEGATIVE_PARAMETER_MSG);
-        List<Gen> columnasSel = lector.getColumnasQuery();
         Cromosoma nuevoGen;
         List<Cromosoma> p = new ArrayList<>();
         do {

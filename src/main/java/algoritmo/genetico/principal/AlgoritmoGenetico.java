@@ -21,7 +21,7 @@ public class AlgoritmoGenetico {
         lector.leerArchivos();
 
         int tamanoPoblacion = 30, tamanoPoblacionElitista = 8, t = 1, maxIter = 500, sinMejora = 0;
-        float probMutacion = 0.15f, probCruzamiento = 0.85f, rh = 0.9f;
+        float probMutacion = 0.15f, probCruzamiento = 0.85f, rh = 0.9f, Ht = 0.000001f;
         long startTime, endTime;
         List<Cromosoma> mejorAnterior, mejorActual;
         startTime = System.nanoTime();
@@ -29,7 +29,7 @@ public class AlgoritmoGenetico {
         poblacion.crearPoblacionInicial(lector, rh);
         poblacion.obtenerMejorSolucion(lector);
         mejorAnterior = poblacion.getMejorSolucion();
-        while (t <= maxIter){
+        while (t <= maxIter || mejorAnterior.get(0).getFitness() > Ht){
             System.out.println("Iteración n° "+t);
             if (sinMejora == 100)
                 break;
@@ -44,8 +44,6 @@ public class AlgoritmoGenetico {
             }
             else
                 sinMejora++;
-            System.out.println("Tiempo: "+mejorAnterior.get(0).getTiempoEjecucion());
-            System.out.println("Fitness: "+mejorAnterior.get(0).getFitness());
             t++;
         }
         System.out.println("Mejor solución");
