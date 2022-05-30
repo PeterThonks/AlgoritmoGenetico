@@ -205,6 +205,44 @@ public class CromosomaTest {
     }
 
     @Test
+    public void existenciaMúltiplesEntradasPenalidad(){
+        Lector lector = new Lector(Constante.PATH_INPUT_CSV + "tablas_northwind_mysql.csv",
+                Constante.PATH_INPUT_CSV + "columnas_northwind_mysql.csv",
+                Path.of(Constante.PATH_INPUT_CSV + "query_northwind.sql"));
+        lector.leerArchivos();
+        do {
+            l = new Cromosoma(lector.getQuerys(), lector.getColumnasQuery());
+            l.crearCromosomaNoIndexado();
+        } while (!l.esValido(lector.getTablas(), lector.getEspacioTablasQuerys(), 0.9f));
+        l.setPenalidadTotal();
+        System.out.println(l.getPenalidadTotal());
+    }
+
+    @Test
+    public void existenciaConformidadPenalidad(){
+        Lector lector = new Lector(Constante.PATH_INPUT_CSV + "tablas_northwind_mysql.csv",
+                Constante.PATH_INPUT_CSV + "columnas_northwind_mysql.csv",
+                Path.of(Constante.PATH_INPUT_CSV + "query_northwind.sql"));
+        lector.leerArchivos();
+        l = new Cromosoma(lector.getQuerys(), lector.getColumnasQuery());
+        l.setPenalidadTotal();
+    }
+
+    @Test
+    public void existenciaFitness(){
+        Lector lector = new Lector(Constante.PATH_INPUT_CSV + "tablas_northwind_mysql.csv",
+                Constante.PATH_INPUT_CSV + "columnas_northwind_mysql.csv",
+                Path.of(Constante.PATH_INPUT_CSV + "query_northwind.sql"));
+        lector.leerArchivos();
+        do {
+            l = new Cromosoma(lector.getQuerys(), lector.getColumnasQuery());
+            l.crearCromosomaNoIndexado();
+        } while (!l.esValido(lector.getTablas(), lector.getEspacioTablasQuerys(), 0.9f));
+        l.setFitness(lector.getTablas());
+        System.out.println(l.getFitness());
+    }
+
+    @Test
     public void existenciaSeleccionarColumnas(){
         Lector lector = new Lector(Constante.PATH_INPUT_CSV + "tablas_northwind_mysql.csv",
                 Constante.PATH_INPUT_CSV + "columnas_northwind_mysql.csv",
