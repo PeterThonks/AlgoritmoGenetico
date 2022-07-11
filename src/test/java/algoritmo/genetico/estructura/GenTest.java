@@ -10,7 +10,7 @@ public class GenTest {
 
     @Test
     public void existenciaGen(){
-        c = new Gen("apellido", 1, 3, 150);
+        c = new Gen("apellido", 1, 3, 150, false);
         assertEquals("apellido", c.getNombreColumna());
         assertEquals(new Pair<Integer, Integer>(1, 3), c.getTupla());
         assertEquals(150, c.getCantidadBytes());
@@ -20,6 +20,6 @@ public class GenTest {
 
     @Test
     public void existenciaConformidadGen(){
-        c = new Gen(null, -1, -3, -150);
+        c = new Gen(null, -1, -3, -150, false);
     }
 }

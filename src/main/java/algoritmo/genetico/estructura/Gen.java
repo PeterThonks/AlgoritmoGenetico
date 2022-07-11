@@ -12,8 +12,9 @@ public class Gen {
     private byte probabilidadEleccion;
     private byte muta;
     private float penalidad;
+    private boolean esPk;
 
-    public Gen(String nombreColumna, int tabla, int columna, long cantidadBytes) {
+    public Gen(String nombreColumna, int tabla, int columna, long cantidadBytes, boolean esPk) {
         if (nombreColumna == null)
             throw new InvalidParameterException(Constante.INVALID_PARAMETER_MSG);
         if (tabla < 0 || columna < 0 || cantidadBytes < 0)
@@ -24,6 +25,7 @@ public class Gen {
         this.cantidadBytes = cantidadBytes;
         this.probabilidadEleccion = 0;
         this.muta = 1;
+        this.esPk = esPk;
     }
 
     public Gen(Gen otro) {
@@ -33,6 +35,7 @@ public class Gen {
         this.probabilidadEleccion = otro.getProbabilidadEleccion();
         this.muta = otro.getMuta();
         this.penalidad = otro.getPenalidad();
+        this.esPk = otro.isEsPk();
     }
 
     public String getNombreColumna() {
@@ -91,8 +94,17 @@ public class Gen {
         this.muta = muta;
     }
 
+    public boolean isEsPk() {
+        return esPk;
+    }
+
+    public void setEsPk(boolean esPk) {
+        this.esPk = esPk;
+    }
+
     public void printColumna(){
         System.out.println("Columna " + this.nombreColumna + " n° " + this.tupla + " con cantidad de bytes " + this.cantidadBytes
-                + " probabilidad de elección de " + this.probabilidadEleccion + " y penalidad de " + this.penalidad);
+                + " probabilidad de elección de " + this.probabilidadEleccion + ", penalidad de " + this.penalidad
+                + " y " + (this.esPk ? "sí" : "no") + " es PK");
     }
 }

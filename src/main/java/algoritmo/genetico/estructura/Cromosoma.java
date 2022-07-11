@@ -358,6 +358,32 @@ public class Cromosoma implements Comparable<Cromosoma> {
         if (this.espacio/espacioTablasQuerys >= rh) {
             flagValido = false;
         }
+
+        int total, count;
+        //Cantidad de columnas por índice
+        int[] indiceColumnas = new int[tablas.size()];
+        for (int i=0; i<tablas.size(); i++){
+            count = 0;
+            for(Gen col : this.columnasSeleccionadas){
+                if(tablas.get(i).getNumeroTabla() == col.getTuplaTabla()){
+                    count ++;
+                }
+            }
+            indiceColumnas[i] = count;
+        }
+        for (int i=0; i<tablas.size(); i++){
+            total = 0;
+            for(Gen c : this.columnasSeleccionadas){
+                if (tablas.get(i).getNumeroTabla() == c.getTuplaTabla() && c.isEsPk())
+                    total++;
+            }
+            if (indiceColumnas[i] != 0 && total == indiceColumnas[i]){
+//                System.out.println("Solo pk");
+                flagValido = false;
+                return flagValido;
+            }
+        }
+
         return flagValido;
     }
 

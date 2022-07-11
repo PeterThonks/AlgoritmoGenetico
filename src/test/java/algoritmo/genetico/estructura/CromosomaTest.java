@@ -17,12 +17,12 @@ public class CromosomaTest {
     @Test
     public void existenciaCromosoma(){
         cols = new ArrayList<>();
-        cols.add(new Gen("idAlumno", 1, 1, 4));
-        cols.add(new Gen("nombre", 1, 2, 150));
-        cols.add(new Gen("apellido", 1, 3, 150));
-        cols.add(new Gen("codigoPUCP", 1, 4, 4));
-        cols.add(new Gen("idAlumno", 7, 2, 4));
-        cols.add(new Gen("nota", 7, 5, 8));
+        cols.add(new Gen("idAlumno", 1, 1, 4, true));
+        cols.add(new Gen("nombre", 1, 2, 150, false));
+        cols.add(new Gen("apellido", 1, 3, 150, false));
+        cols.add(new Gen("codigoPUCP", 1, 4, 4, false));
+        cols.add(new Gen("idAlumno", 7, 2, 4, true));
+        cols.add(new Gen("nota", 7, 5, 8, false));
         l = new Cromosoma("SELECT \n" +
                 "    Products.ProductID,\n" +
                 "    Products.ProductName \n" +

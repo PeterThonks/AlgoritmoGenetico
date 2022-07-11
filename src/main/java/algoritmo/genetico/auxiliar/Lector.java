@@ -145,7 +145,8 @@ public class Lector {
             {
                 String[] columna = line.split(splitBy);
                 //use comma as separator
-                Gen nuevaC = new Gen(columna[0], Integer.parseInt(columna[1]), Integer.parseInt(columna[2]), Long.parseLong(columna[3]));
+                Gen nuevaC = new Gen(columna[0], Integer.parseInt(columna[1]), Integer.parseInt(columna[2]),
+                        Long.parseLong(columna[3]), Integer.parseInt(columna[4]) == 1 ? true : false);
                 this.columnas.add(nuevaC);
             }
         }
@@ -188,7 +189,7 @@ public class Lector {
                             if (fromStatement.contains(nombreCol) && !whereStatement.contains(nombreCol))
                                 newCol.setPenalidad(1f);
                             else if (fromStatement.contains(nombreCol) && whereStatement.contains(nombreCol))
-                                newCol.setPenalidad(2f);
+                                newCol.setPenalidad(1.5f);
                             else
                                 newCol.setPenalidad(7.5f);
                             columnasQuery.add(newCol);
